@@ -1,19 +1,27 @@
 import React from 'react';
+import { savePost } from './SavePost';
 
-export function Editor() {
+export function Editor(props) {
 	const [saving, setSaving] = React.useState(false);
 	const handleSubmit = e => {
+		const { title, content, tags } = e.target.elements;
 		e.preventDefault();
 		setSaving(true);
+		savePost({
+			title: title.value,
+			content: content.value,
+			tags: tags.value.split(',').map(t => t.trim()),
+			authorId: props.user.id,
+		});
 	};
 	return (
 		<form onSubmit={handleSubmit}>
 			<label htmlFor="title">Title</label>
-			<input id="title" />
+			<input id="title" name="title" />
 			<label htmlFor="content">content</label>
-			<input id="content" />
+			<input id="content" name="content" />
 			<label htmlFor="tags">tags</label>
-			<input id="tags" />
+			<input id="tags" name="tags" />
 			<button type="submit" disabled={saving}>
 				Submit
 			</button>
