@@ -1,7 +1,9 @@
 import React from 'react';
 import { savePost } from './SavePost';
-
+import { Redirect } from 'react-router';
 export function Editor(props) {
+	const [redirect, setRedirect] = React.useState(false);
+
 	const [saving, setSaving] = React.useState(false);
 	const handleSubmit = e => {
 		const { title, content, tags } = e.target.elements;
@@ -12,8 +14,11 @@ export function Editor(props) {
 			content: content.value,
 			tags: tags.value.split(',').map(t => t.trim()),
 			authorId: props.user.id,
-		});
+		}).then(() => setRedirect(true));
 	};
+	if (redirect) {
+		return <Redirect to="/" />;
+	}
 	return (
 		<form onSubmit={handleSubmit}>
 			<label htmlFor="title">Title</label>

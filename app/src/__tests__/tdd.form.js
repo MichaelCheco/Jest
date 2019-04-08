@@ -1,9 +1,16 @@
 import 'jest-dom/extend-expect';
 import 'react-testing-library/cleanup-after-each';
+import { act } from 'react-dom/test-utils';
 import React from 'react';
-import { render, fireEvent } from 'react-testing-library';
+import { render, fireEvent, wait } from 'react-testing-library';
 import { Editor } from '../Editor.js';
 import { savePost as mockSavePost } from '../SavePost';
+import { Redirect as mockRedirect } from 'react-router';
+jest.mock('react-router', () => {
+	return {
+		Redirect: jest.fn(() => null),
+	};
+});
 afterEach(() => {
 	mockSavePost.mockClear();
 });
@@ -21,7 +28,7 @@ jest.mock('../SavePost', () => {
 	};
 });
 
-test('should render a form with title, content, tags, and a submit button', () => {
+test('should render a form with title, content, tags, and a submit button', async () => {
 	const { getByLabelText, getByText } = render(<Editor user={FakeUser} />);
 	getByLabelText(/title/i).value = MockPost.title;
 	getByLabelText(/content/i).value = MockPost.content;
@@ -34,4 +41,6 @@ test('should render a form with title, content, tags, and a submit button', () =
 		...MockPost,
 		authorId: FakeUser.id,
 	});
+	await wait(() => expect(mockRedirect).toHaveBeenCalledTimes(1));
+	expect(mockRedirect).toHaveBeenCalledWith({ to: '/' }, {});
 });
