@@ -1,8 +1,7 @@
 import 'jest-dom/extend-expect';
 import 'react-testing-library/cleanup-after-each';
-import { act } from 'react-dom/test-utils';
 import React from 'react';
-import { render, fireEvent, wait } from 'react-testing-library';
+import { render, fireEvent, wait, waitForElement } from 'react-testing-library';
 import { Editor } from '../Editor.js';
 import { savePost as mockSavePost } from '../SavePost';
 import { Redirect as mockRedirect } from 'react-router';
@@ -49,4 +48,20 @@ test('should render a form with title, content, tags, and a submit button', asyn
 	expect(date).toBeLessThanOrEqual(postDate);
 	await wait(() => expect(mockRedirect).toHaveBeenCalledTimes(1));
 	expect(mockRedirect).toHaveBeenCalledWith({ to: '/' }, {});
+});
+
+test('should render an error message from the server', async () => {
+	const testError = 'test error';
+	mockSavePost.mockRejectedValueOnce({ data: { error: testError } }); //override default impl 1 time
+	const { getByLabelText, getByText, getByTestId } = render(
+		<Editor user={FakeUser} />
+	);
+	getByLabelText(/title/i).value = MockPost.title;
+	getByLabelText(/content/i).value = MockPost.content;
+	getByLabelText(/tags/i).value = MockPost.tags;
+	const submitButton = getByText(/submit/i);
+	fireEvent.click(submitButton);
+	const postError = await waitForElement(() => getByTestId('post-error'));
+	expect(postError).toHaveTextContent(testError);
+	expect(submitButton).not.toBeDisabled();
 });
