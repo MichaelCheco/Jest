@@ -26,14 +26,23 @@ jest.mock('../SavePost', () => {
 		savePost: jest.fn(() => Promise.resolve()),
 	};
 });
-
+function renderEditor() {
+	const utils = render(<Editor user={FakeUser} />);
+	utils.getByLabelText(/title/i).value = MockPost.title;
+	utils.getByLabelText(/content/i).value = MockPost.content;
+	utils.getByLabelText(/tags/i).value = MockPost.tags;
+	const submitButton = utils.getByText(/submit/i);
+	return {
+		...utils,
+		submitButton,
+	};
+}
 test('should render a form with title, content, tags, and a submit button', async () => {
-	const { getByLabelText, getByText } = render(<Editor user={FakeUser} />);
+	const { submitButton, getByLabelText } = renderEditor();
 	const preDate = Date.now();
 	getByLabelText(/title/i).value = MockPost.title;
 	getByLabelText(/content/i).value = MockPost.content;
 	getByLabelText(/tags/i).value = MockPost.tags;
-	const submitButton = getByText(/submit/i);
 	fireEvent.click(submitButton);
 	expect(submitButton).toBeDisabled();
 	expect(mockSavePost).toHaveBeenCalledTimes(1);
@@ -53,9 +62,8 @@ test('should render a form with title, content, tags, and a submit button', asyn
 test('should render an error message from the server', async () => {
 	const testError = 'test error';
 	mockSavePost.mockRejectedValueOnce({ data: { error: testError } }); //override default impl 1 time
-	const { getByLabelText, getByText, getByTestId } = render(
-		<Editor user={FakeUser} />
-	);
+	const { getByLabelText, getByText, getByTestId } = renderEditor();
+
 	getByLabelText(/title/i).value = MockPost.title;
 	getByLabelText(/content/i).value = MockPost.content;
 	getByLabelText(/tags/i).value = MockPost.tags;
