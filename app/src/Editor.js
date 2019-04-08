@@ -1,17 +1,22 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-export class Editor extends Component {
-	render() {
-		return (
-			<form>
-				<label htmlFor="title">Title</label>
-				<input id="title" />
-				<label htmlFor="content">content</label>
-				<input id="content" />
-				<label htmlFor="tags">tags</label>
-				<input id="tags" />
-				<button type="submit">Submit</button>
-			</form>
-		);
-	}
+export function Editor() {
+	const [saving, setSaving] = React.useState(false);
+	const handleSubmit = e => {
+		e.preventDefault();
+		setSaving(true);
+	};
+	return (
+		<form onSubmit={handleSubmit}>
+			<label htmlFor="title">Title</label>
+			<input id="title" />
+			<label htmlFor="content">content</label>
+			<input id="content" />
+			<label htmlFor="tags">tags</label>
+			<input id="tags" />
+			<button type="submit" disabled={saving}>
+				Submit
+			</button>
+		</form>
+	);
 }
