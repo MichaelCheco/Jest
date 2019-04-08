@@ -30,6 +30,7 @@ jest.mock('../SavePost', () => {
 
 test('should render a form with title, content, tags, and a submit button', async () => {
 	const { getByLabelText, getByText } = render(<Editor user={FakeUser} />);
+	const preDate = Date.now();
 	getByLabelText(/title/i).value = MockPost.title;
 	getByLabelText(/content/i).value = MockPost.content;
 	getByLabelText(/tags/i).value = MockPost.tags;
@@ -40,7 +41,12 @@ test('should render a form with title, content, tags, and a submit button', asyn
 	expect(mockSavePost).toHaveBeenCalledWith({
 		...MockPost,
 		authorId: FakeUser.id,
+		date: expect.any(String),
 	});
+	const postDate = Date.now();
+	const date = new Date(mockSavePost.mock.calls[0][0].date).getTime();
+	expect(date).toBeGreaterThanOrEqual(preDate);
+	expect(date).toBeLessThanOrEqual(postDate);
 	await wait(() => expect(mockRedirect).toHaveBeenCalledTimes(1));
 	expect(mockRedirect).toHaveBeenCalledWith({ to: '/' }, {});
 });

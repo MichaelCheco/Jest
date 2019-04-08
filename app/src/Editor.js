@@ -12,6 +12,7 @@ export function Editor(props) {
 		savePost({
 			title: title.value,
 			content: content.value,
+			date: new Date().toISOString(),
 			tags: tags.value.split(',').map(t => t.trim()),
 			authorId: props.user.id,
 		}).then(() => setRedirect(true));
