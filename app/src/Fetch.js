@@ -11,9 +11,9 @@ function Fetch({ url }) {
 	}, [url]);
 
 	if (!data) {
-		return <p>Loading</p>;
+		return <p data-testid="loading">Loading</p>;
 	}
-	return <p>{data.message}</p>;
+	return <p data-testid="resolved">{data.message}</p>;
 }
 
 export default Fetch;

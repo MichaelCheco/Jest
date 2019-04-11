@@ -4,5 +4,7 @@ import React from 'react';
 import { render, waitForElement } from 'react-testing-library';
 import axiosMock from 'axios';
 import Fetch from '../Fetch';
-
-it('fetches data correctly', () => {});
+const url = '/greeting';
+it('fetches data correctly', () => {
+	const { getByTestId } = render(<Fetch url={url} />);
+});
